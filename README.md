@@ -4,13 +4,13 @@ This is a [webpack](http://webpack.github.io/) plugin that simplifies creation o
 static components. This plugin can automatically include your compiled CSS and JS files into the correct envelope sections. It will also automatically generate a hash for your asset files so that they are cache busted correctly.
 
 # Installation
-Currently this plugin is bundled with the static-components project, in the future it will be separated out so that it can be installed with `npm install`. 
+Run `npm install --save-dev @bbc/webpack-static-component-enveloper-plugin' to add this module to your project`.
 
 # Basic Usage
 The plugin will generate an envelope json file for each file it matches. By default it will automatically include any CSS and JS files that it finds in the output and will also minimise the HTML in the your component.
 
 ```JavaScript
-const StaticComponentEnveloper = require('./webpack/static-component-enveloper');
+const StaticComponentEnveloper = require('@bbc/webpack-static-component-enveloper-plugin');
 
 const webpackConfig = {
     ...
@@ -80,7 +80,7 @@ The file is then passed as a template string into [lodash template](https://loda
 `webpack.config.js`
 
 ```JavaScript
-const StaticComponentEnveloper = require('./webpack/static-component-enveloper');
+const StaticComponentEnveloper = require('@bbc/webpack-static-component-enveloper-plugin');
 
 const webpackConfig = {
     ...
