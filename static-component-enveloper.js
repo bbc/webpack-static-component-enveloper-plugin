@@ -15,6 +15,10 @@ class StaticComponentEnveloper {
         if (typeof options.includeCss === 'undefined') {
             options.includeCss = true;
         }
+        // Turn on asset hashing by default
+        if (typeof options.hash === 'undefined') {
+            options.hash = true;
+        }
         // Turn on minification by default
         if (typeof options.minify === 'undefined') {
             options.minify = true;
