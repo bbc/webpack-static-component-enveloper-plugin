@@ -97,7 +97,7 @@ class StaticComponentEnveloper {
             });
         }
 
-        if (typeof this.options.injectHead !== 'undefined') {
+        if (this.options.injectHead) {
             const injectedHead = await this.compileInjectedTemplate({
                 compilation,
                 templatePath: this.options.injectHead
@@ -253,7 +253,7 @@ class StaticComponentEnveloper {
 
         // Duplicate css assets can occur on occasion if more than one chunk
         // requires the same css.
-        assets.css = _.uniq(assets.css);
+        assets.css = new Set(assets.css);
 
         return assets;
     }
