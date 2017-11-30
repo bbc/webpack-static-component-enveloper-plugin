@@ -253,7 +253,7 @@ class StaticComponentEnveloper {
 
         // Duplicate css assets can occur on occasion if more than one chunk
         // requires the same css.
-        assets.css = _.uniq(assets.css);
+        assets.css = new Set(assets.css);
 
         return assets;
     }
