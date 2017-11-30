@@ -97,7 +97,7 @@ class StaticComponentEnveloper {
             });
         }
 
-        if (typeof this.options.injectHead !== 'undefined') {
+        if (this.options.injectHead) {
             const injectedHead = await this.compileInjectedTemplate({
                 compilation,
                 templatePath: this.options.injectHead
