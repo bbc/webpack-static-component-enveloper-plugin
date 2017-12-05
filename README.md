@@ -60,6 +60,7 @@ You can pass a hash of configuration options to StaticComponentEveloper. Allowed
 | `includeCss ` | `Boolean` | `true` |  Should CSS files be automatically included in the head using a `link` tag. |
 | `includeJs ` | `Boolean` | `true` |  Should JS files be automatically included in the bodyLast using a `link` tag. |
 | `injectHead ` | `String` | `false` | Path to a lodash template which will be inserted into the head element. Useful for injecting core/enhanced css logic |
+| `inlineCss ` | `String` | `false` | If set to true the CSS content will be outputted in the head element as style tags |
 | `minify ` | `Boolean` | `true` | If the HTML should be minified (uses [html-minifier](https://github.com/kangax/html-minifier)) |
 
 

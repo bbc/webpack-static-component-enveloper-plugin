@@ -93,7 +93,13 @@ class StaticComponentEnveloper {
         // If we want to include CSS files add them to the head.
         if (this.options.includeCss === true) {
             assets.css.forEach((cssFile) => {
-                headElements.push(`<link href="${cssFile}" rel="stylesheet"/>`);
+                if (this.options.inlineCss) {
+                    const cssFileContents = compilation.assets[cssFile.asset].source().toString();
+                    headElements.push(`<style>${cssFileContents}</style>`);
+                    delete compilation.assets[cssFile.asset];
+                } else {
+                    headElements.push(`<link href="${cssFile.url}" rel="stylesheet"/>`);
+                }
             });
         }
 
@@ -123,7 +129,7 @@ class StaticComponentEnveloper {
         }
 
         return assets.js.map((jsFile) => {
-            return `<script type="text/javascript" src="${jsFile}"></script>`;
+            return `<script type="text/javascript" src="${jsFile.url}"></script>`;
         });
     }
 
@@ -233,11 +239,15 @@ class StaticComponentEnveloper {
         chunks.forEach((chunk) => {
             // Prepend the public path to all chunk files
             const chunkFiles = [].concat(chunk.files).map((chunkFile) => {
-                const urlWithPublicPath = publicPath + chunkFile;
+                let url = publicPath + chunkFile;
                 if (this.options.hash) {
-                    return this.appendHash({url: urlWithPublicPath, hash: compilationHash});
+                    url = this.appendHash({url, hash: compilationHash});
                 }
-                return urlWithPublicPath;
+
+                return {
+                    url,
+                    asset: chunkFile
+                };
             });
 
             // Webpack outputs the JS file as the first chunk
@@ -246,7 +256,7 @@ class StaticComponentEnveloper {
 
             // Gather all css files
             const css = chunkFiles.filter((chunkFile) => {
-                return /.css($|\?)/.test(chunkFile);
+                return /.css$/.test(chunkFile.asset);
             });
             assets.css = assets.css.concat(css);
         })
