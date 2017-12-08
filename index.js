@@ -93,7 +93,10 @@ class StaticComponentEnveloper {
         // If we want to include CSS files add them to the head.
         if (this.options.includeCss === true) {
             assets.css.forEach((cssFile) => {
-                if (this.options.inlineCss) {
+                const inlineAll = this.options.inlineCss === true;
+                const inlineCurrent = this.options.inlineCss && this.options.inlineCss.includes(cssFile.asset);
+
+                if (inlineAll || inlineCurrent) {
                     const cssFileContents = compilation.assets[cssFile.asset].source().toString();
                     headElements.push(`<style>${cssFileContents}</style>`);
                     delete compilation.assets[cssFile.asset];
