@@ -151,8 +151,6 @@ class StaticComponentEnveloper {
             templateValues[`${path.basename(cssFile.asset, '.css')}_css`] = cssFileContents.replace('\n', '');;
         });
 
-        console.log(templateValues);
-
         return _.template(templateContents)(templateValues);
     }
 
