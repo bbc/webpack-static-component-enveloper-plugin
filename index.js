@@ -113,11 +113,6 @@ class StaticComponentEnveloper {
             headElements.push(this.minifyHtmlIfEnabled(injectedHead));
         }
 
-        assets.css.forEach((cssFile) => {
-            // this is everything that is horrible about side-effects - do we need this?
-           //delete compilation.assets[cssFile.asset];
-        });
-
         return headElements;
     }
 
