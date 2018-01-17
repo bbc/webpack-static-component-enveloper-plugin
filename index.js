@@ -3,6 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const minify = require('html-minifier').minify;
 const getComponents = require('./getComponents');
+const shortId = require('shortid');
 
 class StaticComponentEnveloper {
 
@@ -96,7 +97,6 @@ class StaticComponentEnveloper {
                 if (this.options.inlineCss) {
                     const cssFileContents = compilation.assets[cssFile.asset].source().toString();
                     headElements.push(`<style>${cssFileContents}</style>`);
-                    delete compilation.assets[cssFile.asset];
                 } else {
                     headElements.push(`<link href="${cssFile.url}" rel="stylesheet"/>`);
                 }
@@ -105,12 +105,18 @@ class StaticComponentEnveloper {
 
         if (this.options.injectHead) {
             const injectedHead = await this.compileInjectedTemplate({
+                assets,
                 compilation,
                 templatePath: this.options.injectHead
             });
 
             headElements.push(this.minifyHtmlIfEnabled(injectedHead));
         }
+
+        assets.css.forEach((cssFile) => {
+            // this is everything that is horrible about side-effects - do we need this?
+           //delete compilation.assets[cssFile.asset];
+        });
 
         return headElements;
     }
@@ -133,11 +139,20 @@ class StaticComponentEnveloper {
         });
     }
 
-    async compileInjectedTemplate({templatePath, compilation}) {
+    async compileInjectedTemplate({templatePath, compilation, assets}) {
         const templateContents = await this.readFile(templatePath);
         const templateValues = {
-            publicPath: this.getPublicPath({compilation})
+            uid: shortId.generate(),
+            publicPath: this.getPublicPath({compilation}),
         };
+
+        assets.css.forEach((cssFile) => {
+            const cssFileContents = compilation.assets[cssFile.asset].source().toString();
+            templateValues[`${path.basename(cssFile.asset, '.css')}_css`] = cssFileContents.replace('\n', '');;
+        });
+
+        console.log(templateValues);
+
         return _.template(templateContents)(templateValues);
     }
 
