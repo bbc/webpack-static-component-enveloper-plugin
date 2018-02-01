@@ -74,6 +74,7 @@ The file is then passed as a template string into [lodash template](https://loda
 | Value | Type | Use |
 |-------|------|-----|
 | `publicPath` | `String` | This the static assets path, it's useful for for including assets from the project in your template |
+| `<your_sass_filename>_css` | `String` | The resulting css from the compilation of each of your sass files (e.g. `main_css`) |
 
 #### Example usage of component head
 **Input:**
