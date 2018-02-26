@@ -26,7 +26,7 @@ const getComponents = async ({directory, test, componentName}) => {
     const filesInSrcDirectory = await getFilesInDirectory({directory});
 
     const matchedComponentFiles = filesInSrcDirectory.filter((file) => {
-        return test.test(file);
+        return typeof test === 'function' ? test(file) : test.test(file);
     });
 
     const components = matchedComponentFiles.map((componentFile) => {

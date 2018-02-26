@@ -54,7 +54,7 @@ You can pass a hash of configuration options to StaticComponentEveloper. Allowed
 
 | Value | Type | Default | Use |
 |-------|------|---------|-----|
-| `test`**\*** | `RegExp` | - | A regex to match files to turn into envelopes |
+| `test`**\*** | `RegExp` or `Function` | - | A regex or function returning a `boolean` to match files to turn into envelopes |
 | `componentName`**\*** | `String` or `Function`| - | Explains how to turn a file path matched with the `test` value into a name |
 | `hash ` | `Boolean` | `true` | Should a unique hash be appended to assets. Useful for cache-busting |
 | `includeCss ` | `Boolean` | `true` |  Should CSS files be automatically included in the head using a `link` tag. |
