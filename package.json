@@ -18,7 +18,7 @@
   "homepage": "https://github.com/bbc/webpack-static-component-enveloper-plugin#readme",
   "dependencies": {
     "html-minifier": "^3.5.7",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.11",
     "shortid": "^2.2.8"
   }
 }
