@@ -51,12 +51,12 @@ class StaticComponentEnveloper {
 
       filesFullPath.forEach((file) => {
         if (!compilation.fileDependencies.hasOwnProperty(file)) {
-          compilation.fileDependencies.push(file)
+          compilation.fileDependencies.add(file)
         }
       })
 
       if (!compilation.contextDependencies.hasOwnProperty(srcDir)) {
-        compilation.contextDependencies.push(srcDir)
+        compilation.contextDependencies.add(srcDir)
       }
 
       callback()
