@@ -1,10 +1,10 @@
 {
   "name": "@bbc/webpack-static-component-enveloper-plugin",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "description": "Webpack plugin for creating static component envelopes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,10 @@
   "homepage": "https://github.com/bbc/webpack-static-component-enveloper-plugin#readme",
   "dependencies": {
     "html-minifier": "^3.5.7",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.11",
     "shortid": "^2.2.8"
+  },
+  "devDependencies": {
+    "standard": "^12.0.1"
   }
 }
