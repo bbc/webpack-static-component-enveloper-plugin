@@ -16,6 +16,9 @@
     "url": "https://github.com/bbc/webpack-static-component-enveloper-plugin/issues"
   },
   "homepage": "https://github.com/bbc/webpack-static-component-enveloper-plugin#readme",
+  "peerDependencies": {
+    "webpack": "^4.29.6"
+  },
   "dependencies": {
     "html-minifier": "^3.5.7",
     "lodash": "^4.17.11",
