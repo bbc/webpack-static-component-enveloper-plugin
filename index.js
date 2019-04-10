@@ -239,7 +239,7 @@ class StaticComponentEnveloper {
     const publicPath = this.getPublicPath({ compilation })
 
     return chunks.reduce((assets, chunk) => {
-      const chunkFiles = chunk.files.map((chunkFile) => {
+      const chunkFiles = [...chunk.files].map((chunkFile) => {
         let url = publicPath + chunkFile
         if (this.options.hash) {
           url = this.appendHash({ url, hash: compilationHash })
