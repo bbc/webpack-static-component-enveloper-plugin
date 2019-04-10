@@ -237,14 +237,9 @@ class StaticComponentEnveloper {
   getAssets ({ chunks, compilation }) {
     const compilationHash = compilation.hash
     const publicPath = this.getPublicPath({ compilation })
-    const assets = {
-      js: [],
-      css: []
-    }
 
-    chunks.forEach((chunk) => {
-      // Prepend the public path to all chunk files
-      const chunkFiles = [].concat(chunk.files).map((chunkFile) => {
+    return chunks.reduce((assets, chunk) => {
+      const chunkFiles = chunk.files.map((chunkFile) => {
         let url = publicPath + chunkFile
         if (this.options.hash) {
           url = this.appendHash({ url, hash: compilationHash })
@@ -256,22 +251,14 @@ class StaticComponentEnveloper {
         }
       })
 
-      // Webpack outputs the JS file as the first chunk
-      const entry = chunkFiles[0]
-      assets.js.push(entry)
-
-      // Gather all css files
-      const css = chunkFiles.filter((chunkFile) => {
-        return /.css$/.test(chunkFile.asset)
-      })
-      assets.css = assets.css.concat(css)
-    })
-
-    // Duplicate css assets can occur on occasion if more than one chunk
-    // requires the same css.
-    assets.css = new Set(assets.css)
-
-    return assets
+      const fileTypeFilter = filterRegEx =>
+              chunkFile => filterRegEx.test(chunkFile.asset)
+        
+      return {
+        css: assets.css.concat(chunkFiles.filter(fileTypeFilter(/.css$/))),
+        js: assets.js.concat(chunkFiles.filter(fileTypeFilter(/.js$/)))
+       }
+    }, { js: [], css: [] })
   }
 
   appendHash ({ url, hash }) {
