@@ -1,6 +1,6 @@
 {
   "name": "@bbc/webpack-static-component-enveloper-plugin",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Webpack plugin for creating static component envelopes",
   "main": "index.js",
   "scripts": {
