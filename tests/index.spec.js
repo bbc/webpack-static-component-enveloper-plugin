@@ -155,46 +155,97 @@ describe('assemble', () => {
   it('', () => {
     const enveloper = new StaticComponentEnveloper({})
     const renderFunction = jest.fn()
-    enveloper.loadTemplate = jest.fn()
+    const loadTemplateFunction = jest.fn()
+    enveloper.loadTemplate = () => loadTemplateFunction
     enveloper.render       = () => renderFunction
     enveloper.minify       = jest.fn()
     enveloper.assemble(['a', 'b', 'c'])
 
-    expect(enveloper.loadTemplate).toBeCalledTimes(3)
+    expect(loadTemplateFunction).toBeCalledTimes(3)
     expect(renderFunction).toBeCalledTimes(3)
     expect(enveloper.minify).toBeCalledTimes(3)
   })
 })
 
-describe('loadTemplates', () => {
+describe('loadFileTemplate', () => {
   const readFileSyncMock = require('fs').readFileSync
   beforeEach(() => {
     readFileSyncMock.mockReset()
   })
   
-  it('loads reasd the file with appropriate encoding', () => {
+  it('reads the template file with appropriate encoding', () => {
     const enveloper = new StaticComponentEnveloper({})
-    enveloper.loadTemplate('template.mustache')
+    enveloper.loadFileTemplate('template.mustache')
     
     expect(readFileSyncMock).toBeCalledWith('template.mustache', 'utf-8')
   })
 
-  it('returns the file content', () => {
+  it('reads the template contents from a file', () => {
     const enveloper = new StaticComponentEnveloper({})
     readFileSyncMock.mockReturnValue('content')
     
-    expect(enveloper.loadTemplate('template.mustache')).toEqual('content')
+    expect(enveloper.loadFileTemplate('template.mustache')).toEqual('content')
   })
 
   it('throws an error if the file does not exist', () => {
     const enveloper = new StaticComponentEnveloper({})
     readFileSyncMock.mockImplementation(() => { throw new Error() })
 
-    expect(() => enveloper.loadTemplate('template.mustache'))
-      .toThrow('Can not find such template template.mustach')
+    expect(() => enveloper.loadFileTemplate('template.mustache')).toThrow()
   })
 })
 
+describe('loadAssetTemplate', () => {
+  it('reads the template contents from the compiled assets', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    const assets = {
+      'template.mustache': {
+        source: () => 'content'
+      }
+    }
+    expect(enveloper.loadAssetTemplate('_template.mustache', assets)).toEqual('content')
+  })
+
+  it('throws an error in the compiled asset does not exist', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    const assets = {}
+    expect(() => enveloper.loadAssetTemplate('_template.mustache', assets)).toThrow()
+  })
+})
+
+describe('isAssetTemplate', () => {
+  it('returns true when the template is marked as an asset', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    expect(enveloper.isAssetTemplate('_template.mustache')).toEqual(true)
+  })
+
+  it('returns false when the template is not marked as an asset', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    expect(enveloper.isAssetTemplate('template.mustache')).toEqual(false)
+  })
+})
+
+describe('loadTemplate', () => {
+  it('returns a template from a file', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    enveloper.loadFileTemplate = jest.fn(() => 'content')
+
+    expect(enveloper.loadTemplate({})('template.mustache')).toEqual('content')
+  })
+
+  it('returns a template from an asset', () => {
+    const enveloper = new StaticComponentEnveloper({})
+    enveloper.loadAssetTemplate = jest.fn(() => 'content')
+
+    expect(enveloper.loadTemplate({})('_template.mustache')).toEqual('content')
+  })
+
+  it('throws if a template does not exist', () => {
+    const enveloper = new StaticComponentEnveloper({})
+
+    expect(() => enveloper.loadTemplate({})('_template.mustache')).toThrow()
+  })
+})
 
 describe('render', () => {
   const assets = {
@@ -220,14 +271,14 @@ describe('render', () => {
   it('can inline an asset', () => {
     const renderFunction = new StaticComponentEnveloper({}).render(assets)
 
-    expect(renderFunction('{{#inline}}index.js{{/inline}}'))
+    expect(renderFunction('{<#inline>}index.js{</inline>}'))
       .toEqual('<script type="text/javascript">console.log("test")</script>')
   })
 
   it('can inline multiple assets', () => {
     const renderFunction = new StaticComponentEnveloper({}).render(assets)
 
-    expect(renderFunction('{{#inline}}index.js{{/inline}}\n{{#inline}}style.css{{/inline}}'))
+    expect(renderFunction('{<#inline>}index.js{</inline>}\n{<#inline>}style.css{</inline>}'))
       .toEqual('<script type="text/javascript">console.log("test")</script>\n<style>.class { color: #000 }</style>')
   })
 
@@ -237,7 +288,7 @@ describe('render', () => {
     const renderFunction = enveloper.render(assets)
     
     
-    expect(renderFunction('{{#reference}}index.js{{/reference}}'))
+    expect(renderFunction('{<#reference>}index.js{</reference>}'))
       .toEqual('<script type="text/javascript" src="index.js"></script>')
   })
 
@@ -246,7 +297,7 @@ describe('render', () => {
     enveloper.publicPath = ''
     const renderFunction = enveloper.render(assets)
 
-    expect(renderFunction('{{#reference}}index.js{{/reference}}\n{{#reference}}style.css{{/reference}}'))
+    expect(renderFunction('{<#reference>}index.js{</reference>}\n{<#reference>}style.css{</reference>}'))
       .toEqual('<script type="text/javascript" src="index.js"></script>\n<link rel="stylesheet" href="style.css"/>')
   })
 
@@ -255,21 +306,21 @@ describe('render', () => {
     enveloper.publicPath = ''
     const renderFunction = enveloper.render(assets)
 
-    expect(renderFunction('{{#reference}}index.js{{/reference}}\n{{#inline}}style.css{{/inline}}'))
+    expect(renderFunction('{<#reference>}index.js{</reference>}\n{<#inline>}style.css{</inline>}'))
       .toEqual('<script type="text/javascript" src="index.js"></script>\n<style>.class { color: #000 }</style>')
   })
 
   it('throws an exception if the asset does not exist', () => {
     const renderFunction = new StaticComponentEnveloper({}).render(assets)
 
-    expect(() => renderFunction('{{#reference}}missing.js{{/reference}}'))
+    expect(() => renderFunction('{<#reference>}missing.js{</reference>}'))
       .toThrow('Could not find asset called missing.js')
   })
 
   it('throws an exception if the asset type is not supported', () => {
     const renderFunction = new StaticComponentEnveloper({}).render(assets)
 
-    expect(() => renderFunction('{{#reference}}image.png{{/reference}}'))
+    expect(() => renderFunction('{<#reference>}image.png{</reference>}'))
       .toThrow('Unsupported asset type png')
   })
 
@@ -278,7 +329,7 @@ describe('render', () => {
     enveloper.publicPath = 1
     const renderFunction = enveloper.render(assets)
 
-    expect(() => renderFunction('{{#reference}}index.js{{/reference}}'))
+    expect(() => renderFunction('{<#reference>}index.js{</reference>}'))
       .toThrow('Unsupported publicPath of type number')
   })
 })
