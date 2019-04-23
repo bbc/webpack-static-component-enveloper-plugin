@@ -21,8 +21,7 @@
   },
   "dependencies": {
     "html-minifier": "^3.5.7",
-    "mustache": "^3.0.1",
-    "shortid": "^2.2.8"
+    "mustache": "^3.0.1"
   },
   "devDependencies": {
     "jest": "^24.7.1"
